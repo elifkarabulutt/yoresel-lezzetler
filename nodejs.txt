@@ -1,0 +1,98 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+const app = express();
+const port = 3000;
+
+// MongoDB bağlantısı
+mongoose.connect('mongodb://localhost/yoresellezzetler', { useNewUrlParser: true, useUnifiedTopology: true });
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB bağlantı hatası:'));
+db.once('open', () => {
+  console.log('MongoDB bağlantısı başarıyla kuruldu');
+});
+
+// Kullanıcı modeli
+const User = mongoose.model('User', {
+  username: String,
+  password: String,
+  isAdmin: Boolean
+});
+
+// Express middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({ secret: 'secret-key', resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport kullanıcı kimlik doğrulama
+passport.use(new LocalStrategy((username, password, done) => {
+  User.findOne({ username: username, password: password }, (err, user) => {
+    if (err) { return done(err); }
+    if (!user) { return done(null, false, { message: 'Geçersiz kullanıcı adı veya şifre' }); }
+    return done(null, user);
+  });
+}));
+
+// Passport oturum yönetimi
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
+
+// Kullanıcı girişi
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true
+}));
+
+// Admin girişi
+app.post('/admin-login', passport.authenticate('local', {
+  successRedirect: '/admin',
+  failureRedirect: '/admin-login',
+  failureFlash: true
+}));
+
+// Kullanıcı sayfası
+app.get('/profile', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.send('Hoş geldiniz, ' + req.user.username);
+  } else {
+    res.redirect('/login');
+  }
+});
+
+// Admin sayfası
+app.get('/admin', (req, res) => {
+  if (req.isAuthenticated() && req.user.isAdmin) {
+    res.send('Hoş geldiniz, Admin ' + req.user.username);
+  } else {
+    res.redirect('/admin-login');
+  }
+});
+
+// Giriş sayfası
+app.get('/login', (req, res) => {
+  res.send('Kullanıcı Girişi');
+});
+
+// Admin giriş sayfası
+app.get('/admin-login', (req, res) => {
+  res.send('Admin Girişi');
+});
+
+// Sunucu başlatma
+app.listen(port, () => {
+  console.log(`Sunucu http://localhost:${port} üzerinde çalışıyor`);
+});
