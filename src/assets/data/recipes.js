@@ -6,6 +6,11 @@ import productImg04 from "../../assets/images/elazıg_1.jpg";
 import productImg05 from "../../assets/images/elazig-2.jpg";
 import productImg06 from "../../assets/images/elazıg_3.jpg";
 
+
+import citiesimg1 from "../../assets/images/elazig.jpg";
+import citiesimg2 from "../../assets/images/malatya.jpeg";
+import cities from "./cities"; 
+
 const recipes = [
   {
     id: "01",
@@ -33,7 +38,9 @@ const recipes = [
     ],
     additionalInfo:
       "Elazığ’ın Harput ilçesine has lezzetlerden biri olarak adını tüm Türkiye’ye duyuran Harput köfte",
-  },
+  cityId:1,
+  
+    },
 
   {
     id: "02",
@@ -90,7 +97,8 @@ const recipes = [
     ],
     additionalInfo:
       "Bilindik bir içli köfte değik Elazığ’ın içli köftesi… ",
-  },
+      cityId:1,
+    },
 
   {
     id: "03",
@@ -150,7 +158,9 @@ const recipes = [
     ],
     additionalInfo:
       "Elazığ’ın Harput ilçesine has lezzetlerden biri olarak adını tüm Türkiye’ye duyuran Harput köfte",
-  },
+      cityId:1,
+  
+    },
 
   {
     id: "05",
@@ -208,7 +218,8 @@ const recipes = [
     ],
     additionalInfo:
       "Bilindik bir içli köfte değik Elazığ’ın içli köftesi… ",
-  },
+      cityId:1,
+    },
 
   {
     id: "06",
@@ -240,7 +251,15 @@ const recipes = [
     ],
     additionalInfo:
       "Bir nevi börek olarak tarif edebileceğimiz patila, Elazığ mutfağının vazgeçilmez yemeklerinden biri",
-  },
+      cityId:1,
+    },
 ];
 
+
+
+
+const recipesWithCityInfo = recipes.map(recipe => {
+  const city = cities.find(city => city.id === recipe.cityId);
+  return { ...recipe, city };
+});
 export default recipes;
