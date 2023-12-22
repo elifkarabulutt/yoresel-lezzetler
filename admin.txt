@@ -1,0 +1,8 @@
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    ad VARCHAR NOT NULL,
+    soyad VARCHAR NOT NULL,
+    eposta VARCHAR NOT NULL,
+    telefonnumarasi VARCHAR NOT NULL,
+    sifre VARCHAR NOT NULL
+);
