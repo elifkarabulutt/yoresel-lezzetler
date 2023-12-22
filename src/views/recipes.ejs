@@ -1,0 +1,9 @@
+<h2>Tarifler</h2>
+<ul>
+    <% recipes.forEach(recipe => { %>
+        <li><a href="/recipes/<%= recipe.recipe_id %>"><%= recipe.recipe_name %></a></li>
+    <% }); %>
+</ul>
+
+
+
